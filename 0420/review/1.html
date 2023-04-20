@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      /* id 선택자, class 선택자, 태그 선택자, 속성 선택...*/
+      h1 {
+        color: blue;
+      }
+      #greeting {
+        font-size: 2em;
+      }
+      .red-text {
+        color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>스크립트는 아래쪽에 써야한다.</h1>
+    <ul>
+      <li id="greeting" class="red-text">만들어진 객체를 참조할 것이기 때문</li>
+      <li class="red-text">Hello</li>
+    </ul>
+    <script>
+      //아직 문서객체가 만들어지지 않았는데... 자바스크립에서는 참조하려니까
+      // 문제가 발생함.
+      // 문서가 다만들어지고 나서 실행하면 됩니다.
+      // window.onload = function ()
+      //선택(querySelector: 단일 요소 선택, querySelectorAll : 복수 요소 선택)
+      // let greetingLi = document.querySelector("#greeting");
+      // console.log(greetingLi.innerHTML);
+      // let listItems = document.querySelectorAll("li");
+      // console.log(listItems);
+      // for (let i = 0; i < listItems.length; i++) {
+      //   console.log(listItems[i].innerText);
+      // }
+      let redTextElemnet = document.querySelector(".red-text");
+      console.log(redTextElemnet);
+    </script>
+  </body>
+</html>
