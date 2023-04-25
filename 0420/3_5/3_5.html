@@ -5,19 +5,44 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
+    <style>
+      .done {
+        color: gray;
+      }
+    </style>
   </head>
   <body>
+    <form action="" id="todoForm">
+      <input type="text" id="todoInput" />
+      <input type="submit" value="ADD" />
+    </form>
+    <ul id="todoList"></ul>
     <script>
-      const form = document.createElement("form");
-      const button = document.createElement("button");
-
-      button.setAttribute("type", "submit");
-      button.textContent = "Add";
-
-      form.appendChild(button);
-
-      const app = document.querySelector("body");
-      app.appendChild(form);
+      // html 요소를 선택하고, 조작
+      // form 요소에서 submit 이벤트가 발생하면
+      // input texxt에 사용자가 입력한 내용을 가지고 와서
+      // 리스트에 추가
+      const todoForm = document.querySelector("#todoForm");
+      const todoInput = document.querySelector("#todoInput");
+      const todoList = document.querySelector("#todoList");
+      // form요소에 submit 이벤트가 발생하면 실행할 문장을 미리 등록
+      // from 요소에 이벤트리스너를 추가 : addEventListner()
+      todoForm.addEventListener("submit", function (event) {
+        // alert("서브밋 이벤트 발생함!");
+        // alert(todoInput.value);
+        const li = document.createElement("li");
+        li.innerText = todoInput.value;
+        todoList.appendChild(li);
+        li.addEventListener("click", function () {
+          li.classList.toggle("done");
+        });
+        //list가 자꾸 날아가는게....새로고침이 되서
+        // 새로고침이 왜 되냐면... form이 원래 그래요..submit이벤트가 발생하면
+        // 요청을 만들어내서 그래요
+        // 요청이 만들어지는걸 막으면 됩니다. 어려우니까 그냥 아 그렇구나
+        event.preventDefault();
+        todoInput.value = "";
+      });
     </script>
   </body>
 </html>
