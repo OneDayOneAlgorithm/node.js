@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>DETAIL</h2>
+  <h3>{{ article.pk }} 번째 글</h3>
+  <hr>
+  <p>제목 : {{ article.title }}</p>
+  <p>내용 : {{ article.content }}</p>
+  <p>작성시각 : {{ article.created_at }}</p>
+  <p>수정시각 : {{ article.updated_at }}</p>
+  <hr>
+  <!-- 유저가 게시글의 유저와 같은 유저일 때 게시글 수정 가능-->
+  {% if user == article.user %} 
+    <a href="{% url 'articles:update' article.pk %}">[UPDATE]</a>
+    <form action="{% url 'articles:delete' article.pk %}" method="POST">
+      {% csrf_token %}
+      <input type="submit" value="DELETE">
+    </form>
+  {% endif %}
+  <a href="{% url 'articles:index' %}">[back]</a>
+  <hr>
+  <h4>댓글 목록</h4>
+  <!-- 전체 댓글창-->
+  <ul id="comment-list">
+    {% for comment in comments %}
+    <!-- 각각의 댓글들 -->
+      <li>
+        {{ comment.user }} - {{ comment.content }}
+        <!-- 유저가 댓글의 유저와 일치할 때 댓글 삭제 가능-->
+        {% if user == comment.user %}
+        
+          <form action="{% url 'articles:comments_delete' article.pk comment.pk %}" method="POST" class="d-inline">
+            {% csrf_token %}
+            <input type="submit" value="DELETE">
+          </form>
+        {% endif %}
+      </li>
+    {% empty %}
+      <p>댓글이 없어요..</p>
+    {% endfor %}
+  </ul>
+
+  <hr>
+  {% if request.user.is_authenticated %}  <!-- 로그인 되어있다면-->
+    <form id="comment-form" data-article-id="{{ article.pk }}"> <!-- 이 폼의 결과값은 어디로 리턴하는가-->
+      {% csrf_token %}  <!-- 만들기 위해 토큰을 받고...-->
+      {{ comment_form }}
+      <input type="submit">
+    </form>
+  {% else %}
+    <a href="{% url 'accounts:login' %}">[댓글을 작성하려면 로그인하세요.]</a>
+  {% endif %}
+{% endblock content %}
+
+{% block script %}
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    const form = document.querySelector('#comment-form')
+    const input = document.querySelector('[name=content]')
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value
+
+    const data = new FormData()
+    
+    form.addEventListener('submit', function (event) {    // 제출 누르면
+      event.preventDefault()        
+      data.append("content",input.value)                      // 새로고침 하지않도록
+      const articleId = event.target.dataset.articleId    // url에 넣을 게시판 pk를 가져온다
+      axios({                                             // axiod가 실행되면
+        method : "post",
+        url : `/articles/${articleId}/comments/`,
+        headers: {'X-CSRFToken': csrftoken},
+        data,                     // 새로단 댓글 데이터
+      })
+      .then((response)=>{
+        const newComment = response.data
+        const commentList = document.querySelector(`#comment-list`) // 댓글 목록 각각의 줄을 의미하는 comment-list를 가져온다..
+        const li = document.createElement('li') // li 안에 넣을 li를 만든다..
+        li.id = `comment-${newComment.id}` // 여기 댓글의 pk를 입력한다..
+        li.innerHTML = `${newComment.user} - ${newComment.content}` // 이런 형식으로 댓글이 달린다..
+        commentList.appendChild(li) // li를 li에 넣는다..
+        input.value = '' // 입력란을 빈칸으로 만든다.
+
+      })
+	// 이곳에 코드를 작성하세요
+    })
+
+  </script>
+{% endblock script %}
